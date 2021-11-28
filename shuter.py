@@ -76,7 +76,7 @@ shoot_bluster_sound = mixer.Sound('bluster.mp3')
 back_music = mixer.Sound('back_music.mp3')
 ship = Player('ship.png', 5, win_height - 100, 80, 100, 10)
 
-
+s
 bullets = sprite.Group()
 
 blust_fire = False
