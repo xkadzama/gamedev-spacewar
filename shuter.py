@@ -1,9 +1,14 @@
 from pygame import *
+from os import path
 
+mixer.init()
 
+# snd_dir = path.join(path.dirname(__file__), 'snd')
 img_back = 'galaxy.png'
 img_blast = 'blust.png'
 img_bullet = 'bullet.png'
+
+
 class GameSprite(sprite.Sprite):
     def __init__(self, player_image, player_x, player_y, size_x, size_y, player_speed):
         sprite.Sprite.__init__(self)
@@ -37,7 +42,11 @@ class Player(GameSprite):
         bullets.add(bullet2)
     
     def fire_bluster(self):
-        blust = Bluster(img_blast, self.rect.centerx-5, self.rect.top-500, 10, 600, -15)
+        top = self.rect.top-500
+        center = self.rect.centerx-5
+        # center = self.rect.x + 35
+        blust = Bluster(img_blast, center, top, 10, 600, 0)
+        
         # blust = Bullet(img_bullet, self.rect.centerx, self.rect.top, 60, 200, -15)
         bullets.add(blust)
 
@@ -46,6 +55,7 @@ class Bullet(GameSprite):
         self.rect.y += self.speed
         if self.rect.y < 0:
             self.kill()
+
 
 class Bluster(GameSprite):
     def update(self):
@@ -61,9 +71,9 @@ win_height = 500
 display.set_caption('Space War')
 window = display.set_mode((win_width, win_height))
 background = transform.scale(image.load(img_back), (win_width, win_height))
-
-
-
+shoot_sound = mixer.Sound('bullet.mp3')
+shoot_bluster_sound = mixer.Sound('bluster.mp3')
+back_music = mixer.Sound('back_music.mp3')
 ship = Player('ship.png', 5, win_height - 100, 80, 100, 10)
 
 
@@ -71,14 +81,18 @@ bullets = sprite.Group()
 
 blust_fire = False
 run = True
+back_music.play(loops=-1)
+music = True
 while run:
     window.blit(background, (0, 0))
+    
     for e in event.get():
         if e.type == QUIT:
             run = False
         elif e.type == KEYDOWN:
             if e.key == K_SPACE and blust_fire == False:
                 ship.fire()
+                shoot_sound.play()
             if e.key == K_a:
                 blust_fire = True
         elif e.type == KEYUP:
@@ -86,9 +100,11 @@ while run:
                 blust_fire = False
     if blust_fire:
         ship.fire_bluster()
+        shoot_bluster_sound.play()
     else:
         pass
 
+    
     bullets.draw(window)
     
     ship.update()
