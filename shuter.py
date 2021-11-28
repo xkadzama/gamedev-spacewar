@@ -3,7 +3,7 @@ from os import path
 
 mixer.init()
 
-# snd_dir = path.join(path.dirname(__file__), 'snd')
+
 img_back = 'galaxy.png'
 img_blast = 'blust.png'
 img_bullet = 'bullet.png'
@@ -75,14 +75,13 @@ shoot_sound = mixer.Sound('bullet.mp3')
 shoot_bluster_sound = mixer.Sound('bluster.mp3')
 back_music = mixer.Sound('back_music.mp3')
 ship = Player('ship.png', 5, win_height - 100, 80, 100, 10)
+back_music.play(loops=-1)
 
-s
+
 bullets = sprite.Group()
 
 blust_fire = False
 run = True
-back_music.play(loops=-1)
-music = True
 while run:
     window.blit(background, (0, 0))
     
@@ -104,7 +103,6 @@ while run:
     else:
         pass
 
-    
     bullets.draw(window)
     
     ship.update()
