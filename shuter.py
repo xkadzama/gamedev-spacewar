@@ -1,13 +1,16 @@
 from pygame import *
 from os import path
+from random import randint
+
 
 mixer.init()
-
 
 img_back = 'galaxy.png'
 img_blast = 'blust.png'
 img_bullet = 'bullet.png'
+img_enemy = 'enemy.png'
 
+lost = 0
 
 class GameSprite(sprite.Sprite):
     def __init__(self, player_image, player_x, player_y, size_x, size_y, player_speed):
@@ -50,6 +53,18 @@ class Player(GameSprite):
         # blust = Bullet(img_bullet, self.rect.centerx, self.rect.top, 60, 200, -15)
         bullets.add(blust)
 
+
+class Enemy(GameSprite):
+    def update(self):
+        self.rect.y += self.speed
+
+        if self.rect.y > win_height:
+            self.rect.x = randint(80, win_width - 80)
+            self.rect.y = 0
+            global lost
+            lost = lost + 1
+
+
 class Bullet(GameSprite):
     def update(self):
         self.rect.y += self.speed
@@ -79,6 +94,11 @@ back_music.play(loops=-1)
 
 
 bullets = sprite.Group()
+enemys = sprite.Group()
+
+for i in range(1, 6):
+    enemy = Enemy(img_enemy, randint(80, win_width - 80), -40, 80, 50, randint(1, 5))
+    enemys.add(enemy)
 
 blust_fire = False
 run = True
@@ -102,12 +122,14 @@ while run:
         shoot_bluster_sound.play()
     else:
         pass
-
-    bullets.draw(window)
+        
+    colides = sprite.groupcollide(enemys, bullets, True, True)
     
+    bullets.draw(window)
+    enemys.draw(window)
     ship.update()
     ship.reset()
     bullets.update()
-    
+    enemys.update()
     time.delay(40)
     display.update()
