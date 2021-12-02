@@ -100,11 +100,10 @@ for i in range(1, 6):
     enemy = Enemy(img_enemy, randint(80, win_width - 80), -40, 80, 50, randint(1, 5))
     enemys.add(enemy)
 
+finish = False
 blust_fire = False
 run = True
 while run:
-    window.blit(background, (0, 0))
-    
     for e in event.get():
         if e.type == QUIT:
             run = False
@@ -117,24 +116,38 @@ while run:
         elif e.type == KEYUP:
             if e.key == K_a:
                 blust_fire = False
+
     if blust_fire:
         ship.fire_bluster()
         shoot_bluster_sound.play()
     else:
         pass
     
-    
-    colides = sprite.groupcollide(enemys, bullets, True, True)
-    for c in colides:
-        enemy = Enemy(img_enemy, randint(80, win_width - 80), -40, 80, 50, randint(1, 5))
-        enemys.add(enemy)
+    if not finish:
+        window.blit(background, (0, 0))
+
+        bullets.draw(window)
+        enemys.draw(window)
+        ship.update()
+        ship.reset()
+        bullets.update()
+        enemys.update()
 
 
-    bullets.draw(window)
-    enemys.draw(window)
-    ship.update()
-    ship.reset()
-    bullets.update()
-    enemys.update()
+        colides = sprite.groupcollide(enemys, bullets, True, True)
+        for c in colides:
+            enemy = Enemy(img_enemy, randint(80, win_width - 80), -40, 80, 50, randint(1, 5))
+            enemys.add(enemy)
+        
+        if sprite.spritecollide(ship, enemys, False):
+            finish = True
+            img = image.load('gameover.jpg')
+            # d = img.get_width() // img.get_height()
+            # window.fill((255,255,255))
+            window.blit(transform.scale(img, (win_width, win_height)), (90, 0))
+            back_music.stop()
+
+        
+        display.update()
     time.delay(40)
-    display.update()
+    
