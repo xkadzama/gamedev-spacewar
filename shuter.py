@@ -8,7 +8,7 @@ mixer.init()
 img_back = 'galaxy.png'
 img_blast = 'blust.png'
 img_bullet = 'bullet.png'
-img_enemy = 'enemy.png'
+img_enemy = 'enemy2.png'
 
 lost = 0
 
@@ -122,9 +122,14 @@ while run:
         shoot_bluster_sound.play()
     else:
         pass
-        
-    colides = sprite.groupcollide(enemys, bullets, True, True)
     
+    
+    colides = sprite.groupcollide(enemys, bullets, True, True)
+    for c in colides:
+        enemy = Enemy(img_enemy, randint(80, win_width - 80), -40, 80, 50, randint(1, 5))
+        enemys.add(enemy)
+
+
     bullets.draw(window)
     enemys.draw(window)
     ship.update()
