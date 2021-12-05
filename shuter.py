@@ -133,12 +133,13 @@ while run:
         bullets.update()
         enemys.update()
 
-
+        # при столкновении врагов с пулями, враги удаляются и их место занимают другие
         colides = sprite.groupcollide(enemys, bullets, True, True)
         for c in colides:
             enemy = Enemy(img_enemy, randint(80, win_width - 80), -40, 80, 50, randint(1, 5))
             enemys.add(enemy)
         
+        # при столкновении врагов с кораблем, выводится текст GAMEOVER
         if sprite.spritecollide(ship, enemys, False):
             finish = True
             img = image.load('gameover.jpg')
@@ -147,7 +148,7 @@ while run:
             window.blit(transform.scale(img, (win_width, win_height)), (90, 0))
             back_music.stop()
 
-        
+
         display.update()
     time.delay(40)
     
