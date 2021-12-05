@@ -3,13 +3,18 @@ from os import path
 from random import randint
 
 
+
+font.init()
 mixer.init()
+font = font.Font(None, 36)
+
 
 img_back = 'galaxy.png'
 img_blast = 'blust.png'
 img_bullet = 'bullet.png'
 img_enemy = 'enemy2.png'
 
+score = 0
 lost = 0
 
 class GameSprite(sprite.Sprite):
@@ -39,10 +44,12 @@ class Player(GameSprite):
             self.rect.x += self.speed
 
     def fire(self):
-        bullet = Bullet(img_bullet, self.rect.right-20, self.rect.top, 15, 20, -15)
-        bullet2 = Bullet(img_bullet, self.rect.left+5, self.rect.top, 15, 20, -15)
+        bullet = Bullet(img_bullet, self.rect.right-20, self.rect.top, 15, 20, 15)
+        bullet2 = Bullet(img_bullet, self.rect.left+5, self.rect.top, 15, 20, 15)
+        bullet3 = Bullet(img_bullet, self.rect.centerx-8, self.rect.top, 15, 20, 15)
         bullets.add(bullet)
         bullets.add(bullet2)
+        bullets.add(bullet3)
     
     def fire_bluster(self):
         top = self.rect.top-500
@@ -67,7 +74,7 @@ class Enemy(GameSprite):
 
 class Bullet(GameSprite):
     def update(self):
-        self.rect.y += self.speed
+        self.rect.y -= self.speed
         if self.rect.y < 0:
             self.kill()
 
@@ -81,15 +88,17 @@ class Bluster(GameSprite):
         
 
 
-win_width = 700
-win_height = 500
+win_width = 1024
+win_height = 720
 display.set_caption('Space War')
 window = display.set_mode((win_width, win_height))
 background = transform.scale(image.load(img_back), (win_width, win_height))
 shoot_sound = mixer.Sound('bullet.mp3')
 shoot_bluster_sound = mixer.Sound('bluster.mp3')
 back_music = mixer.Sound('back_music.mp3')
+
 ship = Player('ship.png', 5, win_height - 100, 80, 100, 10)
+
 back_music.play(loops=-1)
 
 
@@ -125,6 +134,12 @@ while run:
     
     if not finish:
         window.blit(background, (0, 0))
+        # пишем текст на экране
+        text = font.render("Счет: " + str(score), 1, (255, 255, 255))
+        window.blit(text, (10, 20))
+    
+        text_lose = font.render("Пропущено: " + str(lost), 1, (255, 255, 255))
+        window.blit(text_lose, (10, 50))
 
         bullets.draw(window)
         enemys.draw(window)
@@ -136,17 +151,19 @@ while run:
         # при столкновении врагов с пулями, враги удаляются и их место занимают другие
         colides = sprite.groupcollide(enemys, bullets, True, True)
         for c in colides:
+            score = score + 1
             enemy = Enemy(img_enemy, randint(80, win_width - 80), -40, 80, 50, randint(1, 5))
             enemys.add(enemy)
         
         # при столкновении врагов с кораблем, выводится текст GAMEOVER
-        if sprite.spritecollide(ship, enemys, False):
+        if sprite.spritecollide(ship, enemys, False) or lost >= 3:
             finish = True
             img = image.load('gameover.jpg')
             # d = img.get_width() // img.get_height()
             # window.fill((255,255,255))
-            window.blit(transform.scale(img, (win_width, win_height)), (90, 0))
+            window.blit(transform.scale(img, (win_width, win_height)), (0, 0))
             back_music.stop()
+
 
 
         display.update()
